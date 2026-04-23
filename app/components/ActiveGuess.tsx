@@ -19,11 +19,13 @@ interface Props {
  * A giant pulsing STOP button fills the centre. On tap, elapsed time
  * is recorded and passed up to the parent for the results screen.
  *
- * Edge cases:
- * - startRef is set on first render so elapsed time is always ≥ 0.
- * - A "stopped" guard prevents double-fires from rapid taps or touch+click.
- * - The button is sized with a min of 208 px (w-52) scaling to w-64 on md+,
- *   matching the mockup's 200 px+ requirement.
+ * Design polish notes:
+ * - STOP button uses stop-btn-enter class so it bounces in then pulses.
+ * - All content has staggered entrance via card-slide-up + delay-* classes.
+ * - Button size uses clamp(220px, 55vw, 280px) for a comfortable thumb target
+ *   on phones as small as 320 px wide.
+ * - touch-action: manipulation on the button removes the 300 ms tap delay.
+ * - The background is transparent so nebula blobs + stars show through.
  */
 export default function ActiveGuess({ missionMinutes, onStop }: Props) {
   // Record the exact moment this screen mounts as the mission start time.
@@ -56,11 +58,13 @@ export default function ActiveGuess({ missionMinutes, onStop }: Props) {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: "2rem 1rem",
+        padding: "2rem 1.25rem 3rem",
         textAlign: "center",
         fontFamily: "'Nunito', sans-serif",
-        // Subtle gradient matching the mockup's Screen 2 background
-        background: "linear-gradient(180deg, #030a1a 0%, #05101f 100%)",
+        // Keep background transparent so the global star/nebula layer shows through.
+        // The subtle overlay tint is achieved via a very soft radial gradient.
+        background:
+          "radial-gradient(ellipse at 50% 60%, rgba(5,16,31,0.6) 0%, transparent 70%)",
       }}
     >
       {/* ── Orbit rings decoration ───────────────────────── */}
@@ -106,13 +110,14 @@ export default function ActiveGuess({ missionMinutes, onStop }: Props) {
       >
         {/* Status pill */}
         <div
+          className="card-slide-up"
           style={{
-            background: "rgba(30,41,59,0.6)",
-            border: "1px solid rgba(71,85,105,0.4)",
+            background: "rgba(30,41,59,0.7)",
+            border: "1px solid rgba(71,85,105,0.5)",
             borderRadius: 9999,
             padding: "0.5rem 1.5rem",
-            marginBottom: "2rem",
-            backdropFilter: "blur(4px)",
+            marginBottom: "1.75rem",
+            backdropFilter: "blur(8px)",
           }}
         >
           <p
@@ -126,19 +131,21 @@ export default function ActiveGuess({ missionMinutes, onStop }: Props) {
               margin: 0,
             }}
           >
-            🛸 Mission Active · {minuteLabel}
+            🛸 Mission Active&nbsp;·&nbsp;{minuteLabel}
           </p>
         </div>
 
         {/* Headline */}
         <h2
+          className="card-slide-up delay-100"
           style={{
             fontFamily: "'Orbitron', monospace",
-            fontSize: "clamp(1.5rem, 5vw, 2rem)",
+            fontSize: "clamp(1.6rem, 6vw, 2.2rem)",
             fontWeight: 900,
             color: "#ffffff",
-            lineHeight: 1.3,
+            lineHeight: 1.25,
             margin: "0 0 0.5rem",
+            textShadow: "0 0 40px rgba(255,255,255,0.1)",
           }}
         >
           YOU&apos;RE IN
@@ -146,39 +153,47 @@ export default function ActiveGuess({ missionMinutes, onStop }: Props) {
           <span style={{ color: "#fb923c" }}>DEEP SPACE!</span>
         </h2>
 
-        {/* Instruction — matches task spec: "Stop when you think time is up!" */}
+        {/* Instruction */}
         <p
+          className="card-slide-up delay-200"
           style={{
             color: "#94a3b8",
             fontWeight: 700,
             fontSize: "1rem",
             lineHeight: 1.6,
-            margin: "0 0 2.5rem",
-            maxWidth: "24rem",
+            margin: "0 0 2.25rem",
+            maxWidth: "22rem",
           }}
         >
           Stop when you think time is up!
           <br />
-          <span style={{ color: "#64748b", fontSize: "0.875rem" }}>
-            No peeking at the clock, Commander! 👀
+          <span style={{ color: "#64748b", fontSize: "0.85rem" }}>
+            No peeking at the clock, Commander!&nbsp;👀
           </span>
         </p>
 
         {/* ── BIG PULSING STOP BUTTON ───────────────────── */}
         {/*
-          Security / a11y note:
+          Sizing: clamp(220px, 55vw, 280px)
+            - On a 320px phone: 55vw = 176px → clamped up to 220px ✓
+            - On a 390px phone: 55vw = 214px → clamped up to 220px ✓
+            - On a 430px phone: 55vw = 236px → uses 236px ✓
+            - On desktop: clamped to 280px ✓
+          This keeps the button in the "giant but not absurd" zone on all devices.
+
+          a11y:
           - type="button" prevents accidental form submission.
           - aria-label gives screen-reader context.
-          - min size: 208px (w-52) → 256px (w-64 on md+), satisfying the ≥200px spec.
+          - :focus-visible ring defined in globals.css.
         */}
         <button
           type="button"
           aria-label="Stop the timer"
-          className="stop-btn"
+          className="stop-btn-enter"
           onClick={handleStop}
           style={{
-            width: "clamp(208px, 40vw, 256px)",
-            height: "clamp(208px, 40vw, 256px)",
+            width: "clamp(220px, 55vw, 280px)",
+            height: "clamp(220px, 55vw, 280px)",
             borderRadius: "50%",
             border: "none",
             display: "flex",
@@ -189,8 +204,9 @@ export default function ActiveGuess({ missionMinutes, onStop }: Props) {
             marginBottom: "2.5rem",
             userSelect: "none",
             WebkitUserSelect: "none",
-            // Override default browser focus outline with something visible
             outline: "none",
+            // Remove tap highlight on Android Chrome
+            WebkitTapHighlightColor: "transparent",
           }}
         >
           <span
@@ -198,76 +214,52 @@ export default function ActiveGuess({ missionMinutes, onStop }: Props) {
               fontFamily: "'Orbitron', monospace",
               color: "#ffffff",
               fontWeight: 900,
-              fontSize: "clamp(2rem, 8vw, 3rem)",
-              letterSpacing: "0.15em",
+              fontSize: "clamp(2rem, 8vw, 2.75rem)",
+              letterSpacing: "0.08em",
               lineHeight: 1,
+              textShadow: "0 2px 8px rgba(0,0,0,0.4)",
             }}
           >
             STOP
           </span>
           <span
             style={{
-              color: "#fed7aa", // orange-200
-              fontSize: "0.8rem",
+              color: "rgba(255,255,255,0.7)",
+              fontSize: "clamp(0.8rem, 2.5vw, 1rem)",
               fontWeight: 700,
-              marginTop: "0.5rem",
-              letterSpacing: "0.08em",
+              marginTop: "0.4rem",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
             }}
           >
-            TAP WHEN READY
+            Time&apos;s up!
           </span>
         </button>
 
-        {/* Ambient hint */}
+        {/* Hint chip */}
         <div
+          className="card-slide-up delay-400"
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            color: "#475569",
-            fontSize: "0.875rem",
-            fontWeight: 600,
+            background: "rgba(30,41,59,0.55)",
+            border: "1px solid rgba(71,85,105,0.4)",
+            borderRadius: 9999,
+            padding: "0.4rem 1.1rem",
+            backdropFilter: "blur(4px)",
           }}
         >
-          {/* Pinging dot — using inline style + CSS animation via keyframes in globals */}
-          <span
+          <p
             style={{
-              width: 8,
-              height: 8,
-              background: "#f97316",
-              borderRadius: "50%",
-              display: "inline-block",
-              animation: "pulse-stop 1.8s ease-in-out infinite",
+              color: "#475569",
+              fontSize: "0.75rem",
+              fontWeight: 600,
+              margin: 0,
+              letterSpacing: "0.05em",
             }}
-          />
-          No peeking at the clock, Commander!
-        </div>
-
-        {/* Floating planet decorations — purely cosmetic */}
-        <div
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            top: 0,
-            right: -48,
-            opacity: 0.3,
-            fontSize: "3rem",
-            pointerEvents: "none",
-            userSelect: "none",
-            animation: "float-planet 4s ease-in-out infinite",
-          }}
-        >
-          🪐
+          >
+            🤫 The clock is hidden — trust your instincts
+          </p>
         </div>
       </div>
-
-      {/* Floating planet CSS — self-contained keyframe */}
-      <style>{`
-        @keyframes float-planet {
-          0%, 100% { transform: translateY(0); }
-          50%       { transform: translateY(-12px); }
-        }
-      `}</style>
     </div>
   );
 }
