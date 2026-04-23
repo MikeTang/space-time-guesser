@@ -4,6 +4,7 @@ import { useState } from "react";
 import StarField from "./components/StarField";
 import MissionSetup from "./components/MissionSetup";
 import ActiveGuess from "./components/ActiveGuess";
+import MissionReport from "./components/MissionReport";
 
 type Screen = "setup" | "guess" | "result";
 
@@ -21,6 +22,10 @@ export default function Home() {
   function handleStop(ms: number) {
     setElapsedMs(ms);
     setScreen("result");
+  }
+
+  function handlePlayAgain() {
+    setScreen("setup");
   }
 
   return (
@@ -70,55 +75,13 @@ export default function Home() {
         <ActiveGuess missionMinutes={missionMinutes} onStop={handleStop} />
       )}
 
-      {/* ── Screen 3: Result (stub — next task) ── */}
+      {/* ── Screen 3: Mission Report ── */}
       {screen === "result" && (
-        <div
-          style={{
-            position: "relative",
-            zIndex: 10,
-            minHeight: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#ffffff",
-            fontFamily: "'Nunito', sans-serif",
-            gap: "1.5rem",
-            textAlign: "center",
-            padding: "2rem",
-          }}
-        >
-          <p
-            style={{
-              fontFamily: "'Orbitron', monospace",
-              fontSize: "1.25rem",
-              color: "#fb923c",
-            }}
-          >
-            📊 Mission Report
-          </p>
-          <p style={{ color: "#94a3b8" }}>
-            Target: {missionMinutes * 60}s · You stopped at:{" "}
-            {(elapsedMs / 1000).toFixed(1)}s
-          </p>
-          <p style={{ color: "#64748b", fontSize: "0.875rem" }}>
-            Screen 3 coming soon…
-          </p>
-          <button
-            onClick={() => setScreen("setup")}
-            style={{
-              padding: "0.75rem 2rem",
-              borderRadius: "0.75rem",
-              border: "1px solid #475569",
-              background: "transparent",
-              color: "#94a3b8",
-              cursor: "pointer",
-              fontFamily: "'Nunito', sans-serif",
-            }}
-          >
-            ← Play Again
-          </button>
-        </div>
+        <MissionReport
+          missionMinutes={missionMinutes}
+          elapsedMs={elapsedMs}
+          onPlayAgain={handlePlayAgain}
+        />
       )}
     </>
   );
