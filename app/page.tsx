@@ -3,16 +3,24 @@
 import { useState } from "react";
 import StarField from "./components/StarField";
 import MissionSetup from "./components/MissionSetup";
+import ActiveGuess from "./components/ActiveGuess";
 
 type Screen = "setup" | "guess" | "result";
 
 export default function Home() {
   const [screen, setScreen] = useState<Screen>("setup");
   const [missionMinutes, setMissionMinutes] = useState<number>(1);
+  // elapsedMs is set when the kid taps STOP; passed to Screen 3 for scoring.
+  const [elapsedMs, setElapsedMs] = useState<number>(0);
 
   function handleLaunch(minutes: number) {
     setMissionMinutes(minutes);
     setScreen("guess");
+  }
+
+  function handleStop(ms: number) {
+    setElapsedMs(ms);
+    setScreen("result");
   }
 
   return (
@@ -57,8 +65,13 @@ export default function Home() {
       {/* ── Screen 1: Mission Setup ── */}
       {screen === "setup" && <MissionSetup onLaunch={handleLaunch} />}
 
-      {/* ── Screen 2: Active Guess (stub — next task) ── */}
+      {/* ── Screen 2: Active Guess ── */}
       {screen === "guess" && (
+        <ActiveGuess missionMinutes={missionMinutes} onStop={handleStop} />
+      )}
+
+      {/* ── Screen 3: Result (stub — next task) ── */}
+      {screen === "result" && (
         <div
           style={{
             position: "relative",
@@ -82,9 +95,15 @@ export default function Home() {
               color: "#fb923c",
             }}
           >
-            🛸 Mission Active · {missionMinutes} Minute{missionMinutes !== 1 ? "s" : ""}
+            📊 Mission Report
           </p>
-          <p style={{ color: "#94a3b8" }}>Screen 2 coming soon…</p>
+          <p style={{ color: "#94a3b8" }}>
+            Target: {missionMinutes * 60}s · You stopped at:{" "}
+            {(elapsedMs / 1000).toFixed(1)}s
+          </p>
+          <p style={{ color: "#64748b", fontSize: "0.875rem" }}>
+            Screen 3 coming soon…
+          </p>
           <button
             onClick={() => setScreen("setup")}
             style={{
@@ -97,7 +116,7 @@ export default function Home() {
               fontFamily: "'Nunito', sans-serif",
             }}
           >
-            ← Back to Setup
+            ← Play Again
           </button>
         </div>
       )}

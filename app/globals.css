@@ -110,3 +110,54 @@
 .countdown-num {
   animation: countdown-pop 0.9s ease-in-out forwards;
 }
+
+/* ─── STOP button ────────────────────────────────────────── */
+.stop-btn {
+  background: radial-gradient(circle at 40% 35%, #ff6b35, #e53e00);
+  box-shadow:
+    0 0 60px rgba(255, 107, 53, 0.6),
+    0 0 120px rgba(255, 107, 53, 0.25),
+    inset 0 2px 8px rgba(255, 255, 255, 0.2);
+  animation: pulse-stop 1.8s ease-in-out infinite;
+  transition: transform 0.1s;
+}
+.stop-btn:active {
+  transform: scale(0.95) !important;
+}
+@keyframes pulse-stop {
+  0%,
+  100% {
+    box-shadow:
+      0 0 60px rgba(255, 107, 53, 0.6),
+      0 0 120px rgba(255, 107, 53, 0.25),
+      inset 0 2px 8px rgba(255, 255, 255, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow:
+      0 0 80px rgba(255, 107, 53, 0.85),
+      0 0 160px rgba(255, 107, 53, 0.4),
+      inset 0 2px 8px rgba(255, 255, 255, 0.2);
+    transform: scale(1.04);
+  }
+}
+
+/* ─── Orbit rings ────────────────────────────────────────── */
+.orbit-ring {
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  animation: orbit-spin 20s linear infinite;
+}
+.orbit-ring-2 {
+  border: 2px dashed rgba(251, 146, 60, 0.15);
+  border-radius: 50%;
+  animation: orbit-spin 14s linear infinite reverse;
+}
+@keyframes orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
