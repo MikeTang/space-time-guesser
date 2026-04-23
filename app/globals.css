@@ -1,1 +1,112 @@
 @import "tailwindcss";
+
+/* ─── Stars ─────────────────────────────────────────────── */
+.stars-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: white;
+  animation: twinkle var(--dur, 3s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.4);
+  }
+}
+
+/* ─── Nebula blobs ───────────────────────────────────────── */
+.nebula {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Duration card ──────────────────────────────────────── */
+.duration-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.5rem;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.duration-card:hover {
+  background: rgba(251, 146, 60, 0.18);
+  border-color: #fb923c;
+  transform: translateY(-4px);
+  box-shadow: 0 0 28px rgba(251, 146, 60, 0.35);
+}
+.duration-card.selected {
+  background: rgba(251, 146, 60, 0.18);
+  border-color: #fb923c;
+  transform: translateY(-4px);
+  box-shadow: 0 0 28px rgba(251, 146, 60, 0.35);
+}
+
+/* ─── Launch button ──────────────────────────────────────── */
+.launch-btn {
+  background: linear-gradient(135deg, #fb923c, #ef4444);
+  box-shadow: 0 0 32px rgba(251, 146, 60, 0.5), 0 4px 16px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s;
+}
+.launch-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 48px rgba(251, 146, 60, 0.7), 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+.launch-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ─── Rocket flame ───────────────────────────────────────── */
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scaleY(1.15);
+  }
+}
+.flame {
+  animation: flicker 0.6s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+/* ─── Countdown overlay ──────────────────────────────────── */
+@keyframes countdown-pop {
+  0% {
+    opacity: 0;
+    transform: scale(2.5);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+.countdown-num {
+  animation: countdown-pop 0.9s ease-in-out forwards;
+}
