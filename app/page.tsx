@@ -30,7 +30,8 @@ export default function Home() {
 
   return (
     <>
-      {/* Fixed background decorations — always rendered */}
+      {/* ── Fixed background decorations — always rendered ── */}
+
       {/* Nebula blobs */}
       <div
         className="nebula"
@@ -67,21 +68,37 @@ export default function Home() {
       {/* Twinkling star field */}
       <StarField />
 
+      {/*
+        Each screen is wrapped with a key so React fully remounts it on
+        transition, re-triggering the CSS entrance animation.
+        screen-enter      → slides in from the right  (setup → guess)
+        screen-enter-up   → slides up from below       (guess → result)
+        screen-enter-fade → fade + scale               (result → setup)
+      */}
+
       {/* ── Screen 1: Mission Setup ── */}
-      {screen === "setup" && <MissionSetup onLaunch={handleLaunch} />}
+      {screen === "setup" && (
+        <div key="setup" className="screen-enter-fade">
+          <MissionSetup onLaunch={handleLaunch} />
+        </div>
+      )}
 
       {/* ── Screen 2: Active Guess ── */}
       {screen === "guess" && (
-        <ActiveGuess missionMinutes={missionMinutes} onStop={handleStop} />
+        <div key="guess" className="screen-enter">
+          <ActiveGuess missionMinutes={missionMinutes} onStop={handleStop} />
+        </div>
       )}
 
       {/* ── Screen 3: Mission Report ── */}
       {screen === "result" && (
-        <MissionReport
-          missionMinutes={missionMinutes}
-          elapsedMs={elapsedMs}
-          onPlayAgain={handlePlayAgain}
-        />
+        <div key="result" className="screen-enter-up">
+          <MissionReport
+            missionMinutes={missionMinutes}
+            elapsedMs={elapsedMs}
+            onPlayAgain={handlePlayAgain}
+          />
+        </div>
       )}
     </>
   );

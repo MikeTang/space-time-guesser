@@ -14,15 +14,37 @@
   animation: twinkle var(--dur, 3s) ease-in-out infinite;
   animation-delay: var(--delay, 0s);
 }
+/* Brighter "hero" stars with a subtle cross-shaped glow */
+.star-hero {
+  position: absolute;
+  border-radius: 50%;
+  background: white;
+  animation: twinkle-hero var(--dur, 4s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  box-shadow: 0 0 4px 1px rgba(255, 255, 255, 0.6);
+}
 @keyframes twinkle {
   0%,
   100% {
-    opacity: 0.2;
+    opacity: 0.15;
     transform: scale(1);
   }
   50% {
+    opacity: 0.9;
+    transform: scale(1.5);
+  }
+}
+@keyframes twinkle-hero {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+    box-shadow: 0 0 4px 1px rgba(255, 255, 255, 0.4);
+  }
+  50% {
     opacity: 1;
-    transform: scale(1.4);
+    transform: scale(1.6);
+    box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.7);
   }
 }
 
@@ -35,12 +57,58 @@
   z-index: 0;
 }
 
+/* ─── Screen slide transitions ───────────────────────────── */
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(48px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fade-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.screen-enter {
+  animation: slide-in-right 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.screen-enter-up {
+  animation: slide-in-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.screen-enter-fade {
+  animation: fade-scale-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /* ─── Duration card ──────────────────────────────────────── */
 .duration-card {
   background: rgba(255, 255, 255, 0.05);
   border: 2px solid rgba(255, 255, 255, 0.12);
   border-radius: 1.5rem;
-  transition: all 0.2s;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    transform 0.2s,
+    box-shadow 0.2s;
   cursor: pointer;
 }
 .duration-card:hover {
@@ -55,16 +123,26 @@
   transform: translateY(-4px);
   box-shadow: 0 0 28px rgba(251, 146, 60, 0.35);
 }
+/* Tap feedback on touch devices */
+.duration-card:active {
+  transform: scale(0.97) translateY(0);
+}
 
 /* ─── Launch button ──────────────────────────────────────── */
 .launch-btn {
   background: linear-gradient(135deg, #fb923c, #ef4444);
   box-shadow: 0 0 32px rgba(251, 146, 60, 0.5), 0 4px 16px rgba(0, 0, 0, 0.4);
-  transition: all 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s,
+    opacity 0.2s;
 }
 .launch-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 0 48px rgba(251, 146, 60, 0.7), 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+.launch-btn:active:not(:disabled) {
+  transform: scale(0.97);
 }
 .launch-btn:disabled {
   opacity: 0.6;
@@ -120,9 +198,17 @@
     inset 0 2px 8px rgba(255, 255, 255, 0.2);
   animation: pulse-stop 1.8s ease-in-out infinite;
   transition: transform 0.1s;
+  /* Prevent 300ms tap delay on touch */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.stop-btn:focus-visible {
+  outline: 4px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 6px;
 }
 .stop-btn:active {
-  transform: scale(0.95) !important;
+  transform: scale(0.93) !important;
+  animation-play-state: paused;
 }
 @keyframes pulse-stop {
   0%,
@@ -135,11 +221,32 @@
   }
   50% {
     box-shadow:
-      0 0 80px rgba(255, 107, 53, 0.85),
-      0 0 160px rgba(255, 107, 53, 0.4),
-      inset 0 2px 8px rgba(255, 255, 255, 0.2);
-    transform: scale(1.04);
+      0 0 90px rgba(255, 107, 53, 0.9),
+      0 0 180px rgba(255, 107, 53, 0.4),
+      inset 0 2px 8px rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
   }
+}
+
+/* ─── STOP button entrance animation ─────────────────────── */
+@keyframes stop-btn-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.stop-btn-enter {
+  animation:
+    stop-btn-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) both,
+    pulse-stop 1.8s ease-in-out 0.6s infinite;
 }
 
 /* ─── Orbit rings ────────────────────────────────────────── */
@@ -167,7 +274,8 @@
   animation: badge-pulse 2s ease-in-out infinite;
 }
 @keyframes badge-pulse {
-  0%, 100% {
+  0%,
+  100% {
     filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.4));
   }
   50% {
@@ -175,12 +283,123 @@
   }
 }
 
+/* ─── Badge entrance animation ───────────────────────────── */
+@keyframes badge-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.4) rotate(-15deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.12) rotate(4deg);
+  }
+  80% {
+    transform: scale(0.96) rotate(-2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+.badge-enter {
+  animation:
+    badge-enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both,
+    badge-pulse 2s ease-in-out 0.7s infinite;
+}
+
 /* ─── Count-up number (Screen 3) ────────────────────────── */
 @keyframes count-up-pop {
-  0%   { opacity: 0; transform: scale(0.5); }
-  60%  { opacity: 1; transform: scale(1.15); }
-  100% { opacity: 1; transform: scale(1); }
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 .count-up-pop {
   animation: count-up-pop 0.35s ease-out forwards;
+}
+
+/* ─── Result stats card entrance ─────────────────────────── */
+@keyframes card-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.card-slide-up {
+  animation: card-slide-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ─── Stagger delay helpers ──────────────────────────────── */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-700 { animation-delay: 0.7s; }
+.delay-900 { animation-delay: 0.9s; }
+
+/* ─── Shine sweep on launch button ──────────────────────── */
+@keyframes shine {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.launch-btn-shine {
+  background: linear-gradient(
+    135deg,
+    #fb923c 0%,
+    #ef4444 40%,
+    #fde68a 50%,
+    #ef4444 60%,
+    #fb923c 100%
+  );
+  background-size: 200% auto;
+  animation: shine 3s linear infinite;
+  box-shadow: 0 0 32px rgba(251, 146, 60, 0.5), 0 4px 16px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s,
+    opacity 0.2s;
+}
+.launch-btn-shine:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 48px rgba(251, 146, 60, 0.7), 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+.launch-btn-shine:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.launch-btn-shine:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ─── Focus rings (a11y) ─────────────────────────────────── */
+.duration-card:focus-visible {
+  outline: 3px solid rgba(251, 146, 60, 0.8);
+  outline-offset: 4px;
+}
+.launch-btn:focus-visible,
+.launch-btn-shine:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 4px;
+}
+
+/* ─── Rank chip row ──────────────────────────────────────── */
+.rank-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
 }
