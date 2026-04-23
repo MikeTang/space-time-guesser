@@ -161,3 +161,26 @@
     transform: rotate(360deg);
   }
 }
+
+/* ─── Badge glow (Screen 3) ──────────────────────────────── */
+.badge-glow {
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+@keyframes badge-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 28px rgba(251, 191, 36, 0.85));
+  }
+}
+
+/* ─── Count-up number (Screen 3) ────────────────────────── */
+@keyframes count-up-pop {
+  0%   { opacity: 0; transform: scale(0.5); }
+  60%  { opacity: 1; transform: scale(1.15); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.count-up-pop {
+  animation: count-up-pop 0.35s ease-out forwards;
+}
